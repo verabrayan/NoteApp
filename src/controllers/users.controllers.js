@@ -27,7 +27,7 @@ userCtrl.signup = async (req,res)=>{
             const newUser = new users({name,email,password})
             newUser.password = await newUser.encryptPassword(password)
             await newUser.save()
-            req.flash('seccess_msg','You are registered')
+            req.flash('success_msg','You are registered')
             res.redirect('/users/signin')
         }
     }
@@ -37,12 +37,18 @@ userCtrl.renderSignInForm = (req, res) => {
     res.render("users/signin")
 }
 
-userCtrl.signin = (req,res)=>{
-    res.send('singnin')
-}
+userCtrl.signin = passport.authenticate("local",{
+    failureRedirect: '/users/signin',
+    successRedirect: '/notes',
+    failureFlash: true,
+    successFlash: 'welcome'
+
+})
 
 userCtrl.logout= (req,res)=>{
-    res.send('logout')
+    req.logout()
+    req.flash('success_msg','sesion terminada')
+    res.redirect('/users/signin')
 }
 
 module.exports = userCtrl
